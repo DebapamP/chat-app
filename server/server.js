@@ -1,0 +1,61 @@
+const express = require("express")
+const connectDB = require("./config/db")
+const authRoutes = require("./routes/auth")
+const { connect } = require("mongoose")
+const protectedChat = require("./routes/chat.js")
+const userRoutes = require("./routes/user");
+
+
+const cors = require("cors")    //************************* */
+require("dotenv").config()
+
+const app = express()
+
+
+const http = require("http");
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server, {
+    cors: {                        //*************************** */
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+})
+
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+connectDB()
+
+app.use(express.json())
+app.use(cors());
+app.use("/api/auth", authRoutes)
+app.use("/api", protectedChat)
+app.use("/api", userRoutes);
+
+
+io.on("connection", (socket) => {
+    console.log("✅ A user connected:", socket.id);
+  
+    socket.on("private-message", ({ to, message }) => {
+      io.to(to).emit("private-message", {
+        from: socket.id,
+        message
+      });
+    });
+  
+    socket.on("join", (userId) => {
+      socket.join(userId); // user joins their own room
+      console.log(`User ${userId} joined their room`);
+    });
+  
+    socket.on("disconnect", () => {
+      console.log("--> A user disconnected:", socket.id);
+    });
+  });
+
+const PORT = process.env.PORT || 5000
+// app.listen(PORT, () => console.log(`server listening to the port ${PORT}`))
+server.listen(PORT, () => console.log(`server running at the port ${PORT}`))
+

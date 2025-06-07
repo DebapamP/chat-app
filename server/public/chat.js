@@ -1,0 +1,122 @@
+const socket = io();
+
+const token = localStorage.getItem("token");
+const userId = localStorage.getItem('userId');
+// const username = localStorage.getItem('username');
+// socket.emit("join", userId);
+
+// if (!token) {
+//   alert("You are not logged in!");
+//   window.location.href = "/login.html";
+// }
+
+if (token && userId ) {
+  // Let server know this user has connected
+  socket.emit("join", userId);
+} else {
+  alert("You must be logged in");
+  window.location.href = "/login.html";
+}
+
+
+// Get user list
+fetch("http://localhost:5000/api/users", {
+  headers: {
+    Authorization: `Bearer ${token}`
+  }
+})
+  .then(res => res.json())
+  .then(data => {
+    const userList = document.getElementById("user-list");
+    userList.innerHTML = "<h3>All Users:</h3>";
+    data.users.forEach(user => {
+      const userEl = document.createElement("div");
+      userEl.innerText = user.username;
+      userEl.style.cursor = "pointer";
+      userEl.onclick = () => startChat(user);
+      userList.appendChild(userEl);
+
+
+      // userEl.addEventListener("click", () => {
+      //   const recipientId = user._id;
+      //   const message = prompt(`Send a message to ${user.username}:`);
+      //   if (message) {
+      //     socket.emit("private-message", {
+      //       to: recipientId,
+      //       message
+      //     });
+      //   }
+      // });
+    });
+  })
+  .catch(err => {
+    console.error("Error fetching users:", err);
+    alert("couldn't load user")
+  });
+
+function startChat(user) {
+  document.getElementById("chat-box").style.display = "block";
+  document.getElementById("chat-with").innerText = user.username;
+  // Save selected user
+  window.selectedUser = user;
+  // TODO: Load previous messages and setup Socket.IO
+}
+
+const sendBtn = document.getElementById("send-btn");
+const messageInput = document.getElementById("message-input");
+
+
+sendBtn.addEventListener("click", () => {
+  const message = messageInput.value;
+  const recipientId = window.selectedUser?._id;
+
+  if (!recipientId || !message) return;
+
+  socket.emit("private-message", {
+    to: recipientId,
+    message,
+  });
+
+  appendMessage("You", message);
+  messageInput.value = "";
+});
+
+const messages = document.getElementById("messages");
+
+function appendMessage(sender, message) {
+  const msgEl = document.createElement("div");
+  msgEl.classList.add("message");
+  const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  msgEl.innerText =`${sender}: ${message}, ${timestamp}`;
+  messages.appendChild(msgEl);
+}
+
+
+
+
+socket.on("private-message", ({ from, message }) => {
+  alert(`📨 New message from ${from}: ${message}`);
+  // if (!window.selectedUser || window.selectedUser._id !== from) return;
+
+  const div = document.createElement("div");
+  div.classList.add("replyer");
+  const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  div.innerText = `${window.selectedUser.username}: ${message}, ${timestamp}`;
+  messages.appendChild(div);
+});
+
+
+document.getElementById("logout-btn").addEventListener("click", () => {
+  // Clear token from localStorage
+  localStorage.removeItem("token");
+  localStorage.removeItem("userId");
+
+  // Optional: Disconnect socket if used
+  // if (window.socket) {
+  //   window.socket.disconnect();
+  // }
+
+  // Redirect to login
+  window.location.href = "/login.html";
+});
