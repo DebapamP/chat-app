@@ -24,6 +24,9 @@ const io = new Server(server, {
 
 const path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
+app.get("/", (req, res) => {
+  res.send("Server is running. Welcome to InTouch backend.");
+});
 
 
 connectDB()
