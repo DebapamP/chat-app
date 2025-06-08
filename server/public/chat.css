@@ -18,7 +18,7 @@ body {
   margin: 0;
   padding: 20px;
   font-family: 'Courier New', monospace;
-  background: #d0f0ff;
+  background: #d7d0fffc;
   background-image: linear-gradient(to right, #d0f0ff 1px, transparent 1px), 
                     linear-gradient(to bottom, #d0f0ff 1px, transparent 1px);
   background-size: 40px 40px;
