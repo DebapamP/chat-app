@@ -20,7 +20,7 @@ if (token && userId ) {
 
 
 // Get user list
-fetch("http://localhost:5000/api/users", {
+fetch("https://intouch-app.onrender.com/api/users", {
   headers: {
     Authorization: `Bearer ${token}`
   }
@@ -50,7 +50,7 @@ fetch("http://localhost:5000/api/users", {
     });
   })
   .catch(err => {
-    console.error("Error fetching users:", err);
+    console.error("Some Error in fetching users:", err);
     alert("couldn't load user")
   });
 

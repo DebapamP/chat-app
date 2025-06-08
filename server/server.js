@@ -28,7 +28,6 @@ app.get("/", (req, res) => {
   res.send("Server is running. Welcome to InTouch backend.");
 });
 
-
 connectDB()
 
 app.use(express.json())
