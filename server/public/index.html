@@ -3,6 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Welcome to InTouch</title>
+  <script>
+    // Auto-redirect if token exists
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Redirect to chat.html if user is already logged in
+      window.location.href = "/chat.html";
+    }
+  </script>
+  
   <style>
     body {
       margin: 0;
