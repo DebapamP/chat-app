@@ -28,7 +28,7 @@ async function fetchUsers() {
   });
 
   const data = await res.json();
-  users = data;
+  users = data.users;
   displayUsers(users);
 }
 
