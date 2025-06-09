@@ -20,21 +20,45 @@ if (token && userId ) {
 
 
 // Get user list
-fetch("https://intouch-app.onrender.com/api/users", {
-  headers: {
-    Authorization: `Bearer ${token}`
-  }
-})
-  .then(res => res.json())
-  .then(data => {
-    const userList = document.getElementById("user-list");
-    userList.innerHTML = "<h3>All Users:</h3>";
-    data.users.forEach(user => {
-      const userEl = document.createElement("div");
-      userEl.innerText = user.username;
-      userEl.style.cursor = "pointer";
-      userEl.onclick = () => startChat(user);
-      userList.appendChild(userEl);
+async function fetchUsers() {
+  // const token = localStorage.getItem("token");
+  const res = await fetch("/api/users", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const data = await res.json();
+  users = data;
+  displayUsers(users);
+}
+
+function displayUsers(userList) {
+  const userListDiv = document.getElementById("user-list");
+  userListDiv.innerHTML = "";
+
+  userList.forEach(user => {
+    const userEl = document.createElement("div");
+    userEl.textContent = user.username;
+    userEl.classList.add("user-item");
+
+    userEl.onclick = () => startChat(user); // Use your existing function
+    userListDiv.appendChild(userEl);
+  });
+}
+// fetch("https://intouch-app.onrender.com/api/users", {
+//   headers: {
+//     Authorization: `Bearer ${token}`
+//   }
+// })
+//   .then(res => res.json())
+//   .then(data => {
+//     const userList = document.getElementById("user-list");
+//     userList.innerHTML = "<h3>All Users:</h3>";
+//     data.users.forEach(user => {
+//       const userEl = document.createElement("div");
+//       userEl.innerText = user.username;
+//       userEl.style.cursor = "pointer";
+//       userEl.onclick = () => startChat(user);
+//       userList.appendChild(userEl);
 
 
       // userEl.addEventListener("click", () => {
@@ -47,12 +71,12 @@ fetch("https://intouch-app.onrender.com/api/users", {
       //     });
       //   }
       // });
-    });
-  })
-  .catch(err => {
-    console.error("Some Error in fetching users:", err);
-    alert("couldn't load user")
-  });
+  //   });
+  // })
+  // .catch(err => {
+  //   console.error("Some Error in fetching users:", err);
+  //   alert("couldn't load user")
+  // });
 
 function startChat(user) {
   document.getElementById("chat-box").style.display = "block";
@@ -61,6 +85,14 @@ function startChat(user) {
   window.selectedUser = user;
   // TODO: Load previous messages and setup Socket.IO
 }
+// 🔍 Filter users as you type
+document.getElementById("search-bar").addEventListener("input", (e) => {
+  const query = e.target.value.toLowerCase();
+  const filtered = users.filter(u => u.username.toLowerCase().includes(query));
+  displayUsers(filtered);
+});
+
+fetchUsers(); // Call on page load
 
 const sendBtn = document.getElementById("send-btn");
 const messageInput = document.getElementById("message-input");
@@ -95,7 +127,7 @@ function appendMessage(sender, message) {
 
 
 socket.on("private-message", ({ from, message }) => {
-  alert(`📨 New message from ${from}: ${message}`);
+  // alert(`📨 New message from ${from}: ${message}`);
   // if (!window.selectedUser || window.selectedUser._id !== from) return;
 
   const div = document.createElement("div");
