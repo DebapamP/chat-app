@@ -20,9 +20,10 @@ if (token && userId ) {
 
 
 // Get user list
+let users = []
 async function fetchUsers() {
   // const token = localStorage.getItem("token");
-  const res = await fetch("/api/users", {
+  const res = await fetch("https://intouch-app.onrender.com/api/users", {
     headers: { Authorization: `Bearer ${token}` }
   });
 
