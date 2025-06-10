@@ -134,7 +134,7 @@ socket.on("private-message", ({ from, message, username }) => {
   div.classList.add("replyer");
   const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  div.innerText = `username : ${message}, ${timestamp}`;
+  div.innerText = `${username} : ${message}, ${timestamp}`;
   messages.appendChild(div);
 });
 
