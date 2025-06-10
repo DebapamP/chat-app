@@ -40,16 +40,17 @@ app.use("/api", userRoutes);
 io.on("connection", (socket) => {
     console.log("✅ A user connected:", socket.id);
   
-    socket.on("private-message", ({ to, message }) => {
+    socket.on("join", (userId) => {
+      socket.join(userId); // user joins their own room with userId
+      console.log(`User ${userId} joined their room`);
+    });
+
+    socket.on("private-message", ({ to, message, username }) => {
       io.to(to).emit("private-message", {
         from: socket.id,
-        message
+        message,
+        username
       });
-    });
-  
-    socket.on("join", (userId) => {
-      socket.join(userId); // user joins their own room
-      console.log(`User ${userId} joined their room`);
     });
   
     socket.on("disconnect", () => {

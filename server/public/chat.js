@@ -2,7 +2,7 @@ const socket = io();
 
 const token = localStorage.getItem("token");
 const userId = localStorage.getItem('userId');
-// const username = localStorage.getItem('username');
+const username = localStorage.getItem('username');
 // socket.emit("join", userId);
 
 // if (!token) {
@@ -108,6 +108,7 @@ sendBtn.addEventListener("click", () => {
   socket.emit("private-message", {
     to: recipientId,
     message,
+    username
   });
 
   appendMessage("You", message);
@@ -125,9 +126,7 @@ function appendMessage(sender, message) {
 }
 
 
-
-
-socket.on("private-message", ({ from, message }) => {
+socket.on("private-message", ({ from, message, username }) => {
   // alert(`📨 New message from ${from}: ${message}`);
   // if (!window.selectedUser || window.selectedUser._id !== from) return;
 
@@ -135,7 +134,7 @@ socket.on("private-message", ({ from, message }) => {
   div.classList.add("replyer");
   const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  div.innerText = `${window.selectedUser.username}: ${message}, ${timestamp}`;
+  div.innerText = `username : ${message}, ${timestamp}`;
   messages.appendChild(div);
 });
 

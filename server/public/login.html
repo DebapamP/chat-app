@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login</title>
+  <title>Login page</title>
   <link rel="stylesheet" href="login.css">
 </head>
 <body>
@@ -33,7 +33,7 @@
       if (res.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('userId', data.userId);
-        // localStorage.setItem('username', data.username);
+        localStorage.setItem('username', data.username);
         alert('Logged in!');
         window.location.href = '/chat.html'; // redirect to chat 
       } else {
