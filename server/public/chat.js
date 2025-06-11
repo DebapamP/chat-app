@@ -1,5 +1,18 @@
 const socket = io();
 
+
+  // Show disclaimer after page load
+  window.onload = () => {
+    const disclaimer = document.getElementById("disclaimer");
+    disclaimer.classList.add("show");
+  };
+
+  function closeDisclaimer() {
+    const disclaimer = document.getElementById("disclaimer");
+    disclaimer.classList.remove("show");
+  }
+
+
 const token = localStorage.getItem("token");
 const userId = localStorage.getItem('userId');
 const username = localStorage.getItem('username');
