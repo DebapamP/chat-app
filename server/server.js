@@ -40,7 +40,7 @@ app.use("/api", userRoutes);
 io.on("connection", (socket, username) => {
     console.log(`✅ A user connected: ${username}`);
   
-    socket.on("join", (userId) => {
+    socket.on("join", (userId, username) => {
       socket.join(userId); // user joins their own room with userId
       console.log(`User ${username} joined their room`);
     });

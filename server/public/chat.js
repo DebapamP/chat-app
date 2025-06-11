@@ -12,7 +12,7 @@ const username = localStorage.getItem('username');
 
 if (token && userId ) {
   // Let server know this user has connected
-  socket.emit("join", userId);
+  socket.emit("join", userId, username);
 } else {
   alert("You must be logged in");
   window.location.href = "/login.html";
