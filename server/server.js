@@ -36,12 +36,14 @@ app.use("/api/auth", authRoutes)
 app.use("/api", protectedChat)
 app.use("/api", userRoutes);
 
+const userSocketMap = {}; // socket.id => username
 
 io.on("connection", (socket) => {
     console.log("✅ A user connected:", socket.id);
   
     socket.on("join", (userId, username) => {
       socket.join(userId); // user joins their own room with userId
+      userSocketMap[socket.id] = username;
       console.log(`User ${username} joined their room`);
     });
 
