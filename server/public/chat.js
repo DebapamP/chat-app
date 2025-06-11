@@ -102,6 +102,7 @@ const messageInput = document.getElementById("message-input");
 sendBtn.addEventListener("click", () => {
   const message = messageInput.value;
   const recipientId = window.selectedUser?._id;
+  const recipientUsername = window.selectedUser?.username;
 
   if (!recipientId || !message) return;
 
@@ -111,17 +112,17 @@ sendBtn.addEventListener("click", () => {
     username
   });
 
-  appendMessage("You", message);
+  appendMessage("You", message, recipientUsername);
   messageInput.value = "";
 });
 
 const messages = document.getElementById("messages");
 
-function appendMessage(sender, message) {
+function appendMessage(sender, message, to) {
   const msgEl = document.createElement("div");
   msgEl.classList.add("message");
   const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  msgEl.innerText =`${sender}: ${message}, ${timestamp}`;
+  msgEl.innerText =`${sender}: ${message}     ${timestamp}, To: ${to}`;
   messages.appendChild(msgEl);
 }
 
