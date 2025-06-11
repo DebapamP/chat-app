@@ -37,8 +37,8 @@ app.use("/api", protectedChat)
 app.use("/api", userRoutes);
 
 
-io.on("connection", (socket, username) => {
-    console.log(`✅ A user connected: ${username}`);
+io.on("connection", (socket) => {
+    console.log("✅ A user connected:", socket.id);
   
     socket.on("join", (userId, username) => {
       socket.join(userId); // user joins their own room with userId
@@ -53,8 +53,10 @@ io.on("connection", (socket, username) => {
       });
     });
   
-    socket.on("disconnect", (username) => {
+    socket.on("disconnect", () => {
+      const username = userSocketMap[socket.id];
       console.log(`--> A user disconnected: ${username}`)
+      delete userSocketMap[socket.id]; // Clean up
     });
   });
 
