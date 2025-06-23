@@ -137,6 +137,8 @@ function appendMessage(sender, message, to) {
   const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   msgEl.innerText =`${sender}: ${message}     ${timestamp}, To: ${to}`;
   messages.appendChild(msgEl);
+
+  messages.scrollTop = messages.scrollHeight;
 }
 
 
@@ -150,6 +152,8 @@ socket.on("private-message", ({ from, message, username }) => {
 
   div.innerText = `${username} : ${message}, ${timestamp}`;
   messages.appendChild(div);
+
+  messages.scrollTop = messages.scrollHeight;
 });
 
 

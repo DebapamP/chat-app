@@ -68,6 +68,7 @@ h3 {
   border: 2px dashed #888;
   padding: 10px;
   margin-bottom: 10px;
+  scroll-behavior: smooth;
 }
 /* style="height: 200px; overflow-y: scroll; border: 1px solid #ccc */
 #message-input {
