@@ -1,21 +1,26 @@
 const socket = io();
-
-
-  // Show disclaimer after page load
-  window.onload = () => {
-    const disclaimer = document.getElementById("disclaimer");
-    disclaimer.classList.add("show");
-  };
-
-  function closeDisclaimer() {
-    const disclaimer = document.getElementById("disclaimer");
-    disclaimer.classList.remove("show");
-  }
-
-
 const token = localStorage.getItem("token");
 const userId = localStorage.getItem('userId');
 const username = localStorage.getItem('username');
+const typingIndicator = document.createElement("div"); // for TYPING indicator (3rd step)
+typingIndicator.id = "typing-indicator";
+typingIndicator.style.fontStyle = "italic";
+typingIndicator.style.color = "#666";
+
+
+// Show disclaimer after page load
+window.onload = () => {
+  const disclaimer = document.getElementById("disclaimer");
+  disclaimer.classList.add("show");
+};
+
+function closeDisclaimer() {
+  const disclaimer = document.getElementById("disclaimer");
+  disclaimer.classList.remove("show");
+}
+
+
+
 // socket.emit("join", userId);
 
 // if (!token) {
@@ -111,6 +116,29 @@ fetchUsers(); // Call on page load
 const sendBtn = document.getElementById("send-btn");
 const messageInput = document.getElementById("message-input");
 
+//TYPING indicator  (1st step):
+messageInput.addEventListener("input", () => {
+  const recipientId = window.selectedUser?._id;
+  if (!recipientId) return;
+
+  socket.emit("typing", { to: recipientId, from: userId, username });
+});
+
+//TYPING indicator:                           (4th step)
+socket.on("typing", ({ from, username }) => {
+  if (!window.selectedUser || window.selectedUser._id !== from) return;
+
+  typingIndicator.innerText = `${username} is typing...`;
+  messages.appendChild(typingIndicator);
+
+  // Remove after 2 seconds of inactivity
+  clearTimeout(typingIndicator.timer);
+  typingIndicator.timer = setTimeout(() => {
+    if (typingIndicator.parentNode) {
+      typingIndicator.remove();
+    }
+  }, 2000);
+});
 
 sendBtn.addEventListener("click", () => {
   const message = messageInput.value;
@@ -141,21 +169,17 @@ function appendMessage(sender, message, to) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-
 socket.on("private-message", ({ from, message, username }) => {
   // alert(`📨 New message from ${from}: ${message}`);
   // if (!window.selectedUser || window.selectedUser._id !== from) return;
-
   const div = document.createElement("div");
   div.classList.add("replyer");
   const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
   div.innerText = `${username} : ${message}, ${timestamp}`;
   messages.appendChild(div);
 
   messages.scrollTop = messages.scrollHeight;
 });
-
 
 document.getElementById("logout-btn").addEventListener("click", () => {
   // Clear token from localStorage

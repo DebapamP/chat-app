@@ -39,28 +39,29 @@ app.use("/api", userRoutes);
 const userSocketMap = {}; // socket.id => username
 
 io.on("connection", (socket) => {
-    console.log("✅ A user connected:", socket.id);
-  
-    socket.on("join", (userId, username) => {
-      socket.join(userId); // user joins their own room with userId
-      userSocketMap[socket.id] = username;
-      console.log(`User ${username} joined their room`);
-    });
-
-    socket.on("private-message", ({ to, message, username }) => {
-      io.to(to).emit("private-message", {
-        from: socket.id,
-        message,
-        username
-      });
-    });
-  
-    socket.on("disconnect", () => {
-      const username = userSocketMap[socket.id];
-      console.log(`--> A user disconnected: ${username}`)
-      delete userSocketMap[socket.id]; // Clean up
+  console.log("✅ A user connected:", socket.id);
+  socket.on("join", (userId, username) => {
+    socket.join(userId); // user joins their own room with userId
+    userSocketMap[socket.id] = username;
+    console.log(`User ${username} joined their room`);
+  });
+  socket.on("private-message", ({ to, message, username }) => {
+    io.to(to).emit("private-message", {
+      from: socket.id,
+      message,
+      username
     });
   });
+  //TYPING indicator:                                   (2nd step)
+  socket.on("typing", ({ to, from, username }) => {
+    io.to(to).emit("typing", { from, username });
+  });
+  socket.on("disconnect", () => {
+    const username = userSocketMap[socket.id];              //*********************
+    console.log(`--> A user disconnected: ${username}`)
+    delete userSocketMap[socket.id]; // Clean up
+  });
+});
 
 const PORT = process.env.PORT || 5000
 // app.listen(PORT, () => console.log(`server listening to the port ${PORT}`))
